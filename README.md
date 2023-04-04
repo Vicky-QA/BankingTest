@@ -5,11 +5,13 @@ Overview
 The Banking System is an API for the Accounts module that enables users to carry out all operations, including account creation, account deletion, money withdrawals, and money deposits.
 
 Tech Stack Used
+
     Java8, Maven, RestClient,, JUnit5
     Mockserver library for faking server
     Used JUnit5 Assertions in test cases
 
 How to run
+
     Clone the repository
     Open solution in IntelliJ
     Restore packages

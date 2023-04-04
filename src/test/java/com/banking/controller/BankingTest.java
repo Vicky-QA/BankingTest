@@ -36,7 +36,25 @@ public class BankingTest {
 
     private static final String baseUrl = "http://localhost:8080/banking";
 
-    /** Following method is used to create a new account */
+    /**
+     * Following method is used to create a new account
+     * URI: http://localhost:8080/banking/account
+     * Request Type: [POST]
+     * Request Body/Payload:
+     * {
+     * 	"custName":"Vikram",
+     * 	"dob":"1990-09-19",
+     * 	"email":"samplemail1090@gmail.com",
+     * 	"accounts":
+     * 	[
+     *        { "balanceAmt":"1000.00" }
+     * 	]
+     * }
+     * Response:
+     * {
+     * 	success: true,
+     * 	message: "Account created successfully."
+     * }*/
     @Test
     public void createAccountTest() {
         Account acc = new Account();
@@ -56,7 +74,27 @@ public class BankingTest {
         assertEquals(2L, res.getAccounts().get(0).getAcctId());
     }
 
-    /** Following method is used to get all customer account details */
+    /**
+     * Following method is used to get all customer account details
+     *Request:
+     * URI: http://localhost:8080/banking/all-cust-accts
+     * Request Type: [GET]
+     * Response:
+     * {
+     * "custId": 3,
+     * "custName": "VikramKumar",
+     * "dob": 1990-09-19,
+     * "email": "vikram12345@gmail.com",
+     * "accounts": [
+     * {
+     * "acctId": 4,
+     * "accountNum": 82030991607,
+     * "createDate": 1680549574946,
+     * "balanceAmt": 1000.0
+     * }
+     * ]
+     * }
+     * */
     @Test
     public void getAllAccountsTest() {
         Account acc = new Account();
@@ -90,12 +128,31 @@ public class BankingTest {
         assertEquals(2020202020L, res.get(2).getAccounts().get(0).getAccountNum());
     }
 
-    /** Following method is used to check the deposit amount limit exception at the time of create Account*/
+    /**
+     * Following method is used to check the deposit amount limit exception at the time of create Account
+     * URI: http://localhost:8080/banking/account
+     * Request Type: [POST]
+     * Request Body/Payload:
+     * {
+     * 	"custName":"Vikram",
+     * 	"dob":"1990-09-19",
+     * 	"email":"samplemail1090@gmail.com",
+     * 	"accounts":
+     * 	[
+     *        { "balanceAmt":"10001.00" }
+     * 	]
+     * }
+     * Response:
+     * {
+     * 	"timeStamp": 1680613748549,
+     * 	errorMessage: Deposit amount should be less than $10000 per transaction."
+     * 	"statusCode": "BAD_REQUEST"
+     * }*/
     @Test
     public void createAccountDepositAmtLimitExceptionTest() {
         Account acc = new Account();
         acc.setAccountNum(1010101010L);
-        acc.setBalanceAmt(10050.0d);
+        acc.setBalanceAmt(10001.0d);
         acc.setAcctId(2L);
         Customer cus = new Customer();
         cus.setAccounts(Collections.singletonList(acc));
@@ -108,7 +165,27 @@ public class BankingTest {
         assertEquals(1010101010L, response.getAccounts().get(0).getBalanceAmt());
     }
 
-    /** Following method is used to deposit amount for a particular account */
+    /**
+     * Following method is used to deposit amount for a particular account
+     * URI: http://localhost:8080/banking/account
+     * Request Type: [PUT]
+     * Request Body/Payload:
+     * {
+     * 	"custName":"Vikram",
+     * 	"dob":"1990-09-19",
+     * 	"email":"samplemail1090@gmail.com",
+     * 	"accounts":
+     * 	[
+     *        { "balanceAmt":"2000.00" }
+     * 	]
+     * }
+     * Response:
+     * {
+     * 	"accId": 4,
+     * 	"accountNum": 82030991607,
+     * 	"createDate": 1680549574946,
+     * 	"balanceAmt": 3000.0
+     * }*/
     @Test
     public void depositAmountTest() {
         Account acc = new Account();
@@ -122,7 +199,16 @@ public class BankingTest {
         assertEquals(acc.getBalanceAmt(), res.getBalanceAmt());
         assertEquals(acc.getAcctId(), res.getAcctId());
     }
-    /** Following method is used to check the deposit amount limit exception */
+    /**
+     * Following method is used to check the deposit amount limit exception
+     * URI: http://localhost:8080/banking/deposit?depositAmount=10001&accountNum=82030991607
+     * Request Type: [PUT]
+     * Response:
+     * {
+     *     "timeStamp": 1680549968791,
+     *     "errorMessage": "Deposit amount should be less than $10001 per transaction.",
+     *     "statusCode": "BAD_REQUEST"
+     * }*/
     @Test
     public void depositAmountLimitExceptionTest() {
         Account acc = new Account();
@@ -133,14 +219,34 @@ public class BankingTest {
                 .andRespond(withStatus(HttpStatus.BAD_REQUEST));
     }
 
-    /** Following method is used to withdraw amount from an account */
+    /**
+     * Following method is used to withdraw amount from an account
+     * URI: http://localhost:8080/banking/withdraw?withdrawAmount=100&accountNum=82030991607
+     * Request Type: [PUT]
+     * Request Body/Payload:
+     * {
+     * 	"custName":"Vikram",
+     * 	"dob":"1990-09-19",
+     * 	"email":"samplemail1090@gmail.com",
+     * 	"accounts":
+     * 	[
+     *        { "balanceAmt":"2000.00" }
+     * 	]
+     * }
+     * Response:
+     * {
+     * 	"acctId": 4,
+     * 	"accountNum": 82030991607,
+     * 	"createDate": 1680549574946,
+     * 	"balanceAmt": 1900.0
+     * }*/
     @Test
     public void withdrawAmountTest() {
         Account acc = new Account();
         acc.setAccountNum(1010101010L);
         acc.setBalanceAmt(1000.0d);
         acc.setAcctId(2L);
-        this.mockServer.expect(requestTo(baseUrl + "/withdraw?withdrawAmount=10&accountNum=1234567"))
+        this.mockServer.expect(requestTo(baseUrl + "/withdraw?withdrawAmount=10&accountNum=82030991607"))
                 .andRespond(withSuccess((Resource) acc, MediaType.APPLICATION_JSON));
 
         Account res = accountRepo.save(acc);
@@ -148,28 +254,57 @@ public class BankingTest {
         assertEquals(acc.getAcctId(), res.getAcctId());
     }
 
-    /** Following method is used to check withdraw amount limit exception*/
+    /**
+     * Following method is used to check withdraw amount limit exception
+     * URI: http://localhost:8080/banking/withdraw?withdrawAmount=10&accountNum=82030991607
+     * Request Type: [PUT]
+     * Response:
+     * {
+     * 	"timeStamp": 1680615918501,
+     * 	"errorMessage": "Account balance should not be less than $100 Please withdraw lesser amount.",
+     * 	"statusCode": "BAD_REQUEST"
+     * }*/
     @Test
     public void withdrawAmountLimitExceptionTest() {
         Account acc = new Account();
         acc.setAccountNum(1010101010L);
         acc.setBalanceAmt(1000.0d);
         acc.setAcctId(2L);
-        this.mockServer.expect(requestTo(baseUrl + "/withdrawwithdrawAmount=901&accountNum=1234567"))
+        this.mockServer.expect(requestTo(baseUrl + "/withdraw?withdrawAmount=901&accountNum=1234567"))
                 .andRespond(withStatus(HttpStatus.BAD_REQUEST));
     }
-    /** Following method is used to check the response when withdraw amount is more than 90 percent of the available balance*/
+
+    /**
+     * Following method is used to check the response when withdraw amount is more than 90 percent of the available balance
+     * URI: http://localhost:8080/banking/withdraw?withdrawAmount=100&accountNum=82030991607
+     * Request Type: [PUT]
+     * Response:
+     * {
+     * 	"timeStamp": 1680616317394,
+     * 	"errorMessage": "Cannot withdraw more than 90% of balance amount from the account. Please withdraw lesser amount.",
+     * 	"statusCode": "BAD_REQUEST"
+     * }*/
     @Test
     public void withdrawAmountMoreThan90PercentExceptionTest() {
         Account acc = new Account();
         acc.setAccountNum(1010101010L);
         acc.setBalanceAmt(1000.0d);
         acc.setAcctId(2L);
-        this.mockServer.expect(requestTo(baseUrl + "/withdraw/withdrawwithdrawAmount=901&accountNum=1234567"))
+        this.mockServer.expect(requestTo(baseUrl + "/withdraw?withdrawAmount=901&accountNum=1234567"))
                 .andRespond(withStatus(HttpStatus.BAD_REQUEST));
     }
 
-    /** Following method is used to check the response when account has been deleted*/
+    /**
+     * Following method is used to check the response when account has been deleted
+     * URI: http://localhost:8080/banking/account?accountNum=96922250784
+     * Request Type: [DELETE]
+     * Response:
+     * {
+     * 	"acctId": 2,
+     * 	"accountNum": 96922250784,
+     * 	"createDate": 1680549549577,
+     * 	"balanceAmt": 2000.0
+     * }*/
     @Test
     public void deleteAccountTest() {
         Account acc = new Account();
@@ -191,7 +326,14 @@ public class BankingTest {
         assertEquals(10101010101L, customerList.get(0).getCustName());
     }
 
-    /** Following method is used to check the response when internal exception occurs while deleting the user account*/
+    /**
+     * Following method is used to check the response when account has been deleted
+     * URI: http://localhost:8080/banking/account?accountNum=96922250784
+     * Request Type: [DELETE]
+     * Response:
+     * {
+     * 	Status: 500 Internal Server Error
+     * }*/
     @Test
     public void deleteAccountInternalServerExceptionTest() {
         Account acc = new Account();

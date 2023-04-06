@@ -31,3 +31,20 @@ Test cases covered:
 5. A user cannot withdraw more than 90% of their total balance from an account in a single
 transaction.
 6. A user cannot deposit more than $10,000 in a single transaction.
+
+Dummy API's for the above test cases:
+#1. POST (Creates a new account): localhost:8080/banking/account  (Request Payload is required)
+
+#2. PUT (Updates an existing account): localhost:8080/banking/account (Request Payload is required) 
+
+#3. DELETE (Deletes an account): localhost:8080/banking/account?accountNum={27119728627}
+
+#4. GET (Get all customers account): localhost:8080/banking/all-cust-accts
+
+#5. GET (Get all accounts of one particular customer): localhost:8080/banking/cust-accounts?customerName={Vikram}
+
+#6. GET (Get account of a particular account): localhost:8080/banking/account?accountNum={27119728627}
+
+#7. PUT (Withdraw amount from the account): localhost:8080/banking/withdraw?withdrawAmount=10&accountNum=91603512227
+
+#8. PUT (Deposit amount to the account): localhost:8080/banking/deposit?depositAmount=100&accountNum=91603512227

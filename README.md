@@ -17,6 +17,11 @@ How to run
     Restore packages
     Build project
     Run BankingTest class for the result
+    
+Project structure  
+
+		src/main/java - contains the entity class and exception class
+		src/test/java - contains the automation test script.
 
 Test cases covered:
 1. A user can have as many accounts as they want.

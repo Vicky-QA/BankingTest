@@ -13,9 +13,9 @@ Tech Stack Used
 How to run
 
     Clone the repository
-    Open solution in IntelliJ
+    Open project in IntelliJ
     Restore packages
-    Build Solution
+    Build project
     Run BankingTest class for the result
 
 Test cases covered:
